@@ -23,10 +23,15 @@ export function injectInto (url, html) {
 
   for (let target of Object.keys(this.proxyTargets)) {
     if (target === url) {
+      console.log('match');
+
       // Match! Inject the content in where desired.
       let $ = cheerio.load(html.toString('utf8'));
 
       let { selector, manipulation, content } = this.proxyTargets[target];
+      console.log('selector', selector);
+      console.log('manipulation', manipulation);
+      console.log('content', content);
       $(selector)[manipulation](content);
 
       result = $.html();

@@ -27,7 +27,7 @@ test('Should add a single proxy target', (assert) => {
     targets: ['bazaarvoice.com'],
     selector: 'body',
     manipulation: 'test',
-    contents: 'contents'
+    content: 'content'
   };
   proxy.proxy(target);
 
@@ -35,7 +35,7 @@ test('Should add a single proxy target', (assert) => {
     "bazaarvoice.com": {
       selector: target.selector,
       manipulation: target.manipulation,
-      contents: target.contents
+      content: target.content
     }
   });
   assert.end();
@@ -47,14 +47,14 @@ test('Should add all proxy targets', (assert) => {
     targets: ['bazaarvoice.com', 'google.com'],
     selector: 'body',
     manipulation: 'test',
-    contents: 'contents'
+    content: 'content'
   };
   proxy.proxy(target);
 
   const expected = {
     selector: target.selector,
     manipulation: target.manipulation,
-    contents: target.contents
+    content: target.content
   };
   assert.deepEqual(injector.proxyTargets, {
     "bazaarvoice.com": expected,
@@ -69,14 +69,14 @@ test('Should support a string target', (assert) => {
     targets: 'bazaarvoice.com',
     selector: 'body',
     manipulation: 'test',
-    contents: 'contents'
+    content: 'content'
   };
   proxy.proxy(target);
 
   const expected = {
     selector: target.selector,
     manipulation: target.manipulation,
-    contents: target.contents
+    content: target.content
   };
   assert.deepEqual(injector.proxyTargets, {
     "bazaarvoice.com": expected

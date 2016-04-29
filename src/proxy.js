@@ -17,10 +17,10 @@ const PORT = 8063;
 /**
  * Adds a proxy target.
  *
- * @param {Object}  options - Required and optional options.
+ * @param {Object}  options - Required options.
  *
  * @param {Array}   options.targets - A list of strings to test URLs against.
- *   If the URL matches exactly, 'contents' will be injected into the response.
+ *   If the URL matches exactly, options.content will be injected into the response.
  *
  * @param {String}  options.selector - The cheerio selector to use.
  *   @see https://github.com/cheeriojs/cheerio#selectors
@@ -28,11 +28,11 @@ const PORT = 8063;
  * @param {String}  options.manipulation - The cheerio manipulation method to use.
  *   @see manipulations.js.
  *
- * @param {String}  options.contents - The HTML / CSS / JS contents to inject.
+ * @param {String}  options.content - The HTML / CSS / JS content to inject.
  */
 export function proxy (options) {
   // Grab the values from options via destructuring.
-  let { targets, selector, manipulation, contents } = options;
+  let { targets, selector, manipulation, content } = options;
 
   // Targets: Ensure an array.
   targets = [].concat(targets);
@@ -42,7 +42,7 @@ export function proxy (options) {
     injector.proxyTargets[target] = {
       selector: selector,
       manipulation: manipulation,
-      contents: contents
+      content: content
     };  
   }
 }
