@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src -d dist",
+    "postinstall": "npm run build",
     "start": "npm run build && node --harmony dist/proxy-runner.js",
-    "postinstall": "npm run build"
+    "test": "tape -r babel-register 'test/**/*.spec.js' | faucet || true"
   },
   "repository": {
     "type": "git",
@@ -23,5 +24,9 @@
     "babel-preset-node5": "^11.0.2",
     "cheerio": "^0.20.0",
     "request": "^2.72.0"
+  },
+  "devDependencies": {
+    "faucet": "0.0.1",
+    "tape": "^4.5.1"
   }
 }
