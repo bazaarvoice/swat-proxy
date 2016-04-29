@@ -7,6 +7,7 @@
     "build": "babel src -d dist",
     "postinstall": "npm run build",
     "start": "npm run build && node --harmony dist/proxy-runner.js",
+    "debug": "tape -r babel-register 'test/**/*.spec.js' || true",
     "test": "tape -r babel-register 'test/**/*.spec.js' | faucet || true"
   },
   "repository": {

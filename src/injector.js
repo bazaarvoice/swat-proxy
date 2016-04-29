@@ -18,14 +18,11 @@ export var proxyTargets = {};
 export function injectInto (url, html) {
   let result = html;
 
-  for (let target of Object.keys(proxyTargets)) {
+  for (let target of Object.keys(this.proxyTargets)) {
     if (target === url) {
-      console.log('Match. Proxy server injecting content into', url);
-      console.log('The content is', proxyTargets[target]);
-
       // Match! Inject the content in.
       let $ = cheerio.load(html.toString('utf8'));
-      $('body').append(proxyTargets[target]);
+      $('body').append(this.proxyTargets[target]);
       result = $.html();
 
       // Early out, we won't match more than one target.
@@ -33,6 +30,5 @@ export function injectInto (url, html) {
     }
   }
 
-  //console.log('The result is', result.substring(20));
   return result;
 }
