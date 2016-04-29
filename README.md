@@ -48,7 +48,7 @@ Open the developer console to see the message "hello from proxy".
 
 ## Contributing
 
-### Start the Proxy
+### Start the Proxy locally
 
 ```bash
 npm start

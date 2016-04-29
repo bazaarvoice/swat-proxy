@@ -6,8 +6,7 @@
 import * as proxy from './proxy.js';
 import { Manipulations } from './manipulations.js';
 
-// Go time.
-// Ends with homedepot.com.
+// Add some JS to the end of Home Depot's homepage:
 proxy.proxy({
   targets: [
     'http://homedepot.com/',
