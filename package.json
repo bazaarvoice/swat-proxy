@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src -d dist",
-    "start": "npm run build && node --harmony dist/proxy-runner.js"
+    "start": "npm run build && node --harmony dist/proxy-runner.js",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
