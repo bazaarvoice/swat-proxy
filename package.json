@@ -8,7 +8,7 @@
     "postinstall": "npm run build",
     "start": "npm run build && node --harmony dist/proxy-runner.js",
     "debug": "tape -r babel-register 'test/**/*.spec.js' || true",
-    "test": "tape -r babel-register 'test/**/*.spec.js' | faucet || true"
+    "test": "tape -r babel-register 'test/**/*.spec.js' | tap-spec || true"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "request": "^2.72.0"
   },
   "devDependencies": {
-    "faucet": "0.0.1",
+    "tap-spec": "^4.1.1",
     "tape": "^4.5.1"
   }
 }

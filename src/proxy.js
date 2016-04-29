@@ -17,25 +17,43 @@ const PORT = 8063;
 /**
  * Adds a proxy target.
  *
- * @param {Array} targets   - A list of strings to test URLs against.
- *                          If the URL matches exactly, 'contents' will be
- *                          injected into the response.
- * @param {String} contents - The HTML / CSS / JS contents to inject.
+ * @param {Object}  options - Required and optional options.
+ *
+ * @param {Array}   options.targets - A list of strings to test URLs against.
+ *   If the URL matches exactly, 'contents' will be injected into the response.
+ *
+ * @param {String}  options.selector - The cheerio selector to use.
+ *   @see https://github.com/cheeriojs/cheerio#selectors
+ *
+ * @param {String}  options.manipulation - The cheerio manipulation method to use.
+ *   @see manipulations.js.
+ *
+ * @param {String}  options.contents - The HTML / CSS / JS contents to inject.
  */
-export function proxy (targets, contents) {
-  // Convert single string to array.
+export function proxy (options) {
+  // Grab the values from options via destructuring.
+  let { targets, selector, manipulation, contents } = options;
+
+  // Targets: Ensure an array.
   targets = [].concat(targets);
 
   // Add all of the desired targets.
   for (let target of targets) {
-    injector.proxyTargets[target] = contents;  
+    injector.proxyTargets[target] = {
+      selector: selector,
+      manipulation: manipulation,
+      contents: contents
+    };  
   }
 }
 
 /**
  * Creates and starts the proxy server.
+ *
+ * @param {Number} port - The port to start the proxy server on.
+ *                        Defaults to 8063.
  */
-export function start () {
+export function start (port) {
   let proxyServer = http.createServer((clientRequest, clientResponse) => {
     clientRequest.pause();
 
@@ -59,6 +77,7 @@ export function start () {
   });
 
   // Start the proxy server.
-  console.log(`Proxy server listening on port ${PORT}.`);
-  proxyServer.listen(PORT);
+  const realPort = port || PORT;
+  console.log(`Proxy server listening on port ${realPort}.`);
+  proxyServer.listen(realPort);
 }

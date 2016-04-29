@@ -5,6 +5,9 @@
 // NPM.
 import cheerio from 'cheerio';
 
+// Local.
+import Manipulations from './manipulations.js';
+
 export var proxyTargets = {};
 
 /**
@@ -20,9 +23,12 @@ export function injectInto (url, html) {
 
   for (let target of Object.keys(this.proxyTargets)) {
     if (target === url) {
-      // Match! Inject the content in.
+      // Match! Inject the content in where desired.
       let $ = cheerio.load(html.toString('utf8'));
-      $('body').append(this.proxyTargets[target]);
+
+      let { selector, manipulation, content } = this.proxyTargets[target];
+      $(selector)[manipulation](content);
+
       result = $.html();
 
       // Early out, we won't match more than one target.

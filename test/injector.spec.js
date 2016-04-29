@@ -3,45 +3,50 @@ import test from 'tape';
 
 // Local.
 import * as injector from '../src/injector.js';
+import Manipulations from '../src/manipulations.js';
 
 /*
  * Test Setup Helpers.
  */
-const previousProxyTargets = injector.proxyTargets;
-
 // Restores the module to its initial state.
 function reset () {
-  injector.proxyTargets = previousProxyTargets;
+  injector.proxyTargets = {};
 }
 
 /*
  * Test Cases.
  */
-test('Should not alter response when no target matches.', (assert) => {
-  // Setup: Proxy target does not match URL.
-  const serverHTML = 'html';
-  injector.proxyTargets = { 'aol.com': 'value' };
-  const result = injector.injectInto('google.com', serverHTML);
-
-  assert.equal(result, serverHTML);
-  assert.end();
-  reset();
-});
+test('# injector.spec.js', (t) => t.end());
 
 test('Should alter response when target matches.', (assert) => {
   // Setup: Proxy target does match URL.
   const targetURL = 'bazaarvoice.com';
   const serverHTML = new Buffer('<html><body>html</body></html>');
-  const injected = 'value';
+  const injection = 'value';
 
-  injector.proxyTargets[targetURL] = injected;
-  const result = injector.injectInto(targetURL, serverHTML, assert);
+  injector.proxyTargets[targetURL] = {
+    selector: 'body',
+    manipulation: Manipulations.APPEND,
+    content: injection
+  };
+  const result = injector.injectInto(targetURL, serverHTML);
 
   assert.equal(
-    result.indexOf(injected) >= 0,
+    result.indexOf(injection) >= 0,
     true,
     "Result contains injected content."
   );
+  assert.end();
+  reset();
+});
+
+test('Should not alter response when no target matches.', (assert) => {
+  // Setup: Proxy target does not match URL.
+  const serverHTML = 'html';
+  injector.proxyTargets = { 'aol.com': {}};
+  const result = injector.injectInto('google.com', serverHTML);
+
+  assert.equal(result, serverHTML);
   assert.end();
   reset();
 });
