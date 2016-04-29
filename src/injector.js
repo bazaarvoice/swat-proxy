@@ -6,7 +6,7 @@
 import cheerio from 'cheerio';
 
 // Local.
-import Manipulations from './manipulations.js';
+import { Manipulations } from './manipulations.js';
 
 export var proxyTargets = {};
 

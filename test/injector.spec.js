@@ -3,7 +3,7 @@ import test from 'tape';
 
 // Local.
 import * as injector from '../src/injector.js';
-import Manipulations from '../src/manipulations.js';
+import { Manipulations } from '../src/manipulations.js';
 
 /*
  * Test Setup Helpers.

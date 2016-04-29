@@ -4,7 +4,7 @@
 
 // Local.
 import * as proxy from './proxy.js';
-import Manipulations from './manipulations.js';
+import { Manipulations } from './manipulations.js';
 
 // Go time.
 // Ends with homedepot.com.
