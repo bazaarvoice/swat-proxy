@@ -86,14 +86,16 @@ swat_proxy.start();
 ### Manipulations
 
 `swat-proxy` provides an enumeration of supported DOM manipulations. They are:
-  * APPEND: Insert content as the last child of each of the selected elements.
-  * PREPEND: Insert content as the first child of each of the selected elements.
-  * REPLACE: Replace selected elements with content.
-  * WRAP: Wrap selected elements with content.
+  * `APPEND`: Insert content as the last child of each of the selected elements.
+  * `PREPEND`: Insert content as the first child of each of the selected elements.
+  * `REPLACE`: Replace selected elements with content.
+  * `WRAP`: Wrap selected elements with content.
 
 For more information on these manipulations, see https://github.com/cheeriojs/cheerio#manipulation.
 
 ## Contributing
+
+Please create JIRA tickets under the SWAT project and submit PRs for inclusion.
 
 ### Start the Proxy locally
 
