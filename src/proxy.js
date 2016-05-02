@@ -39,11 +39,11 @@ export function proxy (options) {
 
   // Add all of the desired targets.
   for (let target of targets) {
-    injector.proxyTargets[target] = {
+    injector.addProxyTarget(target, {
       selector: selector,
       manipulation: manipulation,
       content: content
-    };  
+    });
   }
 }
 

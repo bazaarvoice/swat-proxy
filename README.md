@@ -34,6 +34,7 @@ swat_proxy.proxy({
   content: '<script>console.log("hello from proxy");</script>'
 });
 
+// Start the proxy server.
 swat_proxy.start();
 ```
 
@@ -45,6 +46,52 @@ View Page Source and see that the JS was inserted before the closing body tag (`
 
 Open the developer console to see the message "hello from proxy".
 
+### BV Common Use Case
+
+Often times in SWAT applications we ask clients to put a container `<div>` on their page where they want our module to appear, and a `<script>` tag later on that loads the module into the container.
+
+You can inject more than one piece of content into a page by calling `proxy` multiple times, like so:
+
+```js
+import swat_proxy from 'swat-proxy';
+
+// Add the container div to the designated area.
+swat_proxy.proxy({
+  targets: [
+    'http://homedepot.com/',
+    'http://www.homedepot.com/'
+  ],
+  selector: '#BVContentArea',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<div id="BVModuleNameContainer"></div>'
+});
+
+// Add the JS that populates the div to the end of the body.
+swat_proxy.proxy({
+  targets: [
+    'http://homedepot.com/',
+    'http://www.homedepot.com/'
+  ],
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<script>document.getElementById("BVModuleNameContainer").innerHTML = "hello from BV!";</script>'
+});
+
+// Start the proxy server.
+swat_proxy.start();
+```
+
+*Note:* Order is preserved when injecting content. In other words, proxy your container `div` before referencing it in `script`s.
+
+### Manipulations
+
+`swat-proxy` provides an enumeration of supported DOM manipulations. They are:
+  * APPEND: Insert content as the last child of each of the selected elements.
+  * PREPEND: Insert content as the first child of each of the selected elements.
+  * REPLACE: Replace selected elements with content.
+  * WRAP: Wrap selected elements with content.
+
+For more information on these manipulations, see https://github.com/cheeriojs/cheerio#manipulation.
 
 ## Contributing
 
