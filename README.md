@@ -29,8 +29,8 @@ swat_proxy.proxy({
     'http://homedepot.com/',
     'http://www.homedepot.com/'
   ],
-  selector: 'body',
   manipulation: swat_proxy.Manipulations.APPEND,
+  selector: 'body',
   content: '<script>console.log("hello from proxy");</script>'
 });
 
@@ -53,16 +53,16 @@ Often times in SWAT applications we ask clients to put a container `<div>` on th
 You can inject more than one piece of content into a page by calling `proxy` multiple times, like so:
 
 ```js
-import swat_proxy from 'swat-proxy';
+var swat_proxy = require('swat-proxy');
 
-// Add the container div to the designated area.
+// Add the container div to the footer.
 swat_proxy.proxy({
   targets: [
     'http://homedepot.com/',
     'http://www.homedepot.com/'
   ],
-  selector: '#BVContentArea',
-  manipulation: swat_proxy.Manipulations.APPEND,
+  manipulation: swat_proxy.Manipulations.PREPEND,
+  selector: 'footer',
   content: '<div id="BVModuleNameContainer"></div>'
 });
 
@@ -72,16 +72,14 @@ swat_proxy.proxy({
     'http://homedepot.com/',
     'http://www.homedepot.com/'
   ],
-  selector: 'body',
   manipulation: swat_proxy.Manipulations.APPEND,
+  selector: 'body',
   content: '<script>document.getElementById("BVModuleNameContainer").innerHTML = "hello from BV!";</script>'
 });
 
 // Start the proxy server.
 swat_proxy.start();
 ```
-
-*Note:* Order is preserved when injecting content. In other words, proxy your container `div` before referencing it in `script`s.
 
 ### Manipulations
 
