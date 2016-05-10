@@ -10,17 +10,19 @@ import request from 'request';
 
 // Local.
 import * as injector from './injector.js';
+import * as logger from './logger.js';
 
 // Members.
-const PORT = 8063;
+const DEFAULT_PORT = 8063;
+const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
 
 /**
  * Adds a proxy target.
  *
- * @param {Object}  options - Required options.
- *
- * @param {Array}   options.targets - A list of strings to test URLs against.
+ * @param {String}          target  - A string to test URLs against.
  *   If the URL matches exactly, options.content will be injected into the response.
+ *
+ * @param {Object | Array}  options - Required options or list of options.
  *
  * @param {String}  options.selector - The cheerio selector to use.
  *   @see https://github.com/cheeriojs/cheerio#selectors
@@ -30,32 +32,46 @@ const PORT = 8063;
  *
  * @param {String}  options.content - The HTML / CSS / JS content to inject.
  */
-export function proxy (options) {
-  // Grab the values from options via destructuring.
-  let { targets, selector, manipulation, content } = options;
+export function proxy (target, options) {
+  // A target is required.
+  if (!target) {
+    throw new Error(ERROR_MISSING_PARAMS);
+  }
 
-  // Targets: Ensure an array.
-  targets = [].concat(targets);
+  // Ensure that options is an array.
+  options = [].concat(options);
 
-  // Add all of the desired targets.
-  for (let target of targets) {
-    injector.addProxyTarget(target, {
-      selector: selector,
-      manipulation: manipulation,
-      content: content
-    });
+  for (let optionEntry of options) {
+    // All options parameters are required.
+    if (!optionEntry.selector || !optionEntry.manipulation || !optionEntry.content) {
+      throw new Error(ERROR_MISSING_PARAMS);
+    }
+
+    // Add the desired proxy target.
+    injector.addProxyTarget(target, optionEntry);
   }
 }
 
 /**
  * Creates and starts the proxy server.
  *
- * @param {Number} port - The port to start the proxy server on.
- *                        Defaults to 8063.
+ * @param {Object}  options - Optional options.
+ * 
+ * @param {Number}  options.port - The port to start the proxy server on.
+ *                               Defaults to 8063.
+ *
+ * @param {Boolean} options.debugMode - Enables logging to help debug problems.
  */
-export function start (port) {
+export function start (options) {
+  // Enable the logger if requested to do so.
+  if (options && !!options.debugMode) {
+    logger.enableLogging();
+  }
+
   let proxyServer = http.createServer((clientRequest, clientResponse) => {
     clientRequest.pause();
+
+    logger.log(`Making a request to ${clientRequest.url}.`);
 
     // Actually make the request to the desired endpoint to get the initial HTML.
     request({
@@ -77,7 +93,7 @@ export function start (port) {
   });
 
   // Start the proxy server.
-  const realPort = port || PORT;
+  const realPort = (options && options.port) ? options.port : DEFAULT_PORT;
   console.log(`Proxy server listening on port ${realPort}.`);
   proxyServer.listen(realPort);
 }

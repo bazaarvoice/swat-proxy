@@ -19,6 +19,7 @@ function reset () {
 /*
  * Test Cases.
  */
+// This is for formatting the output only.
 test('# injector.spec.js', (t) => t.end());
 
 test('#addProxyTarget Should work when target does not exist', (assert) => {
