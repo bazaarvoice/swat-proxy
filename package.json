@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "babel src -d dist",
+    "eslint": "eslint index.js src/**",
     "postinstall": "npm run build",
-    "precommit": "tape -r babel-register 'test/**/*.spec.js' | tap-spec",
+    "precommit": "tape -r babel-register 'test/**/*.spec.js' | tap-spec && npm run eslint",
     "start": "npm run build && node dist/proxy-runner.js",
     "test": "tape -r babel-register 'test/**/*.spec.js' | tap-spec || true"
   },
@@ -27,6 +28,8 @@
     "request": "^2.72.0"
   },
   "devDependencies": {
+    "eslint": "^2.9.0",
+    "eslint-plugin-react": "^5.1.1",
     "tap-spec": "^4.1.1",
     "tape": "^4.5.1"
   }

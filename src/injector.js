@@ -6,7 +6,6 @@
 import cheerio from 'cheerio';
 
 // Local.
-import { Manipulations } from './manipulations.js';
 import * as logger from './logger.js';
 
 /**
@@ -36,6 +35,8 @@ export var proxyTargets = {};
  *                 @see  ./manipulations.js
  *
  * @param {String} options.content - The actual content to inject.
+ *
+ * @returns {void}
  */
 export function addProxyTarget (target, options) {
   if (!this.proxyTargets[target]) {
@@ -54,14 +55,14 @@ export function addProxyTarget (target, options) {
  * @param  {String} url  - The client requested URL.
  * @param  {Buffer} html - The server response HTML in a Buffer.
  *
- * @return {String}      - HTML with contents injected.
+ * @returns {String}     - HTML with contents injected.
  */
 export function injectInto (url, html) {
   let result = html;
 
   for (let target of Object.keys(this.proxyTargets)) {
     if (target === url) {
-      logger.log(`Found a match! Injecting content.`);
+      logger.log('Found a match! Injecting content.');
 
       // Match! Inject the content in where desired.
       let $ = cheerio.load(html.toString('utf8'));

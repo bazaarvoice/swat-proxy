@@ -31,6 +31,8 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
  *   @see manipulations.js.
  *
  * @param {String}  options.content - The HTML / CSS / JS content to inject.
+ *
+ * @returns {void}
  */
 export function proxy (target, options) {
   // A target is required.
@@ -56,11 +58,13 @@ export function proxy (target, options) {
  * Creates and starts the proxy server.
  *
  * @param {Object}  options - Optional options.
- * 
+ *
  * @param {Number}  options.port - The port to start the proxy server on.
  *                               Defaults to 8063.
  *
  * @param {Boolean} options.debugMode - Enables logging to help debug problems.
+ *
+ * @returns {void}
  */
 export function start (options) {
   // Enable the logger if requested to do so.
@@ -94,6 +98,6 @@ export function start (options) {
 
   // Start the proxy server.
   const realPort = (options && options.port) ? options.port : DEFAULT_PORT;
-  console.log(`Proxy server listening on port ${realPort}.`);
+  console.log(`Proxy server listening on port ${realPort}.`); //eslint-disable-line no-console
   proxyServer.listen(realPort);
 }

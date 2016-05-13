@@ -1,4 +1,4 @@
-/** 
+/**
  * Entry point into swat-proxy.
  */
 
