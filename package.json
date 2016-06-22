@@ -8,7 +8,6 @@
     "eslint": "eslint index.js src/**",
     "postinstall": "npm run build",
     "precommit": "tape -r babel-register 'test/**/*.spec.js' | tap-spec && npm run eslint",
-    "start": "npm run build && node dist/proxy-runner.js",
     "test": "tape -r babel-register 'test/**/*.spec.js' | tap-spec || true"
   },
   "repository": {
