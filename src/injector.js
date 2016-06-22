@@ -60,9 +60,6 @@ export function addProxyTarget (target, options) {
 export function injectInto (url, html) {
   let result = html;
 
-  console.log('proxyTarget for this url:', this.proxyTargets[url]);
-  console.log('keys', Object.keys(this.proxyTargets));
-
   if (this.proxyTargets[url]) {
     logger.log('Found a match! Injecting content.');
 
