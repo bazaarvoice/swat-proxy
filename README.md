@@ -1,108 +1,181 @@
 # swat-proxy
 
-## Usage
+swat-proxy is intended to be used as a local development helper tool to easily inject content onto third party web pages. It acts as a man-in-the-middle between your browser (client) and a server, altering the server response from pages you specify.
 
-### Installation
-
-Include the following under the `dependencies` or `devDependencies` section in your `package.json`:
-
-```js
-"swat-proxy": "git+ssh://git@github.com:bazaarvoice/swat-proxy.git"
-```
-
-Be sure to install to your project:
+## Installation
 
 ```bash
-npm install
+npm install swat-proxy
 ```
 
-### Write a Script that runs the Proxy
+## Quick Start
+
+### Write a script that runs the Proxy
 
 ```js
 /* Filename: do-proxy.js */
 
-import swat_proxy from 'swat-proxy';
-
-// Add some JS to the end of Home Depot's homepage:
-swat_proxy.proxy({
-  targets: [
-    'http://homedepot.com/',
-    'http://www.homedepot.com/'
-  ],
-  manipulation: swat_proxy.Manipulations.APPEND,
-  selector: 'body',
-  content: '<script>console.log("hello from proxy");</script>'
-});
-
-// Start the proxy server.
-swat_proxy.start();
-```
-
-Run your script as normal: `node do-proxy.js`.
-
-Set up your browser to use a proxy server at `127.0.0.1:8063` and navigate to http://www.homedepot.com/.
-
-View Page Source and see that the JS was inserted before the closing body tag (`</body>`).
-
-Open the developer console to see the message "hello from proxy".
-
-### BV Common Use Case
-
-Often times in SWAT applications we ask clients to put a container `<div>` on their page where they want our module to appear, and a `<script>` tag later on that loads the module into the container.
-
-You can inject more than one piece of content into a page by calling `proxy` multiple times, like so:
-
-```js
+// Import swat-proxy.
 var swat_proxy = require('swat-proxy');
 
-// Add the container div to the footer.
-swat_proxy.proxy({
-  targets: [
-    'http://homedepot.com/',
-    'http://www.homedepot.com/'
-  ],
-  manipulation: swat_proxy.Manipulations.PREPEND,
-  selector: 'footer',
-  content: '<div id="BVModuleNameContainer"></div>'
-});
-
-// Add the JS that populates the div to the end of the body.
-swat_proxy.proxy({
-  targets: [
-    'http://homedepot.com/',
-    'http://www.homedepot.com/'
-  ],
-  manipulation: swat_proxy.Manipulations.APPEND,
+// Add some JS to the end of the Google homepage.
+swat_proxy.proxy('http://www.google.com/', {
   selector: 'body',
-  content: '<script>document.getElementById("BVModuleNameContainer").innerHTML = "hello from BV!";</script>'
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<script> alert ("Hello from swat-proxy!"); </script>'
 });
 
 // Start the proxy server.
 swat_proxy.start();
 ```
 
-### Manipulations
+### Run your Script
 
-`swat-proxy` provides an enumeration of supported DOM manipulations. They are:
-  * `APPEND`: Insert content as the last child of each of the selected elements.
-  * `PREPEND`: Insert content as the first child of each of the selected elements.
-  * `REPLACE`: Replace selected elements with content.
-  * `WRAP`: Wrap selected elements with content.
+```bash
+node do-proxy.js
+```
+
+By default swat-proxy runs on port `8063` so set your browser to use the proxy at `127.0.0.1:8063` and navigate to http://www.google.com/.
+
+You should be immediately presented with the greeting alert, and you can `View Page Source` to see that the JS was inserted before the closing body tag (`</body>`).
+
+## Usage
+
+Let's dig a little deeper.
+
+### Proxy Blocks
+
+A call to `.proxy` is affectionately referred to as a *proxy block*:
+
+```js
+swat_proxy.proxy('http://www.google.com/', {
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<script> alert ("Hello from swat-proxy!"); </script>'
+});
+```
+
+The way to read this proxy block is:
+
+> *Append* `content` to the *body* of `http://www.google.com`.
+
+#### Details
+
+Let's break down the parameters of proxy blocks. The most up-to-date documentation can always be found in the [source code](https://github.com/bazaarvoice/swat-proxy/blob/master/src/proxy.js#L20), but for convenience it is detailed here too. Refer to the following signature:
+
+```js
+swat_proxy.proxy(url, {
+  selector,
+  manipulation,
+  content
+});
+```
+
+##### url
+
+The target URL to inject content into. Example `http://www.google.com/`.
+
+Note that this must match **exactly** to the browser URL - `google.com` will **not** match `www.google.com`. In other words, if you point your proxy block at `google.com` but navigate to `www.google.com`, your content will not be injected.
+
+The easiest way to grab your target URL is to navigate to your target page and copy/paste the URL directly into your proxy block code. For example, typing `google.com` into Firefox and copy/pasting results in `http://google.com/`. This is the value you want to use.
+
+##### selector
+
+A CSS selector to target DOM elements. Examples `body`, `div`, `#id`, `.class`.
+
+##### manipulation
+
+`swat-proxy` provides an enumeration of supported DOM manipulations to be used as values for `manipulation`. They are:
+  * `APPEND`: Insert `content` as the last child of each of the selected elements.
+  * `PREPEND`: Insert `content` as the first child of each of the selected elements.
+  * `REPLACE`: Replace selected elements with `content`.
+  * `WRAP`: Wrap selected elements with `content`.
 
 For more information on these manipulations, see https://github.com/cheeriojs/cheerio#manipulation.
 
+##### content
+
+A string containing the content to inject.
+
+### Third Party JS Common Use Case
+
+Often times in third party javascript applications we ask clients or customers to put a container `<div>` on their page where they want our widget to appear, and a `<script>` tag to fill it with content.
+
+You can simulate this by injecting more than one piece of content into a page.
+
+#### Using an Array
+
+You can simply pass an array of manipulation instructions into a single proxy block, like so:
+
+```js
+// Import swat-proxy.
+var swat_proxy = require('./index.js');
+
+// Add a container div and some JS that populates it to the end of the Google homepage.
+swat_proxy.proxy('http://www.google.com/', [{
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<div id="SwatProxyContainer"></div>'
+}, {
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<script> document.getElementById("SwatProxyContainer").innerHTML = "Hello from swat-proxy!"; </script>'
+}]);
+
+// Start the proxy server.
+swat_proxy.start();
+```
+
+#### Multiple Proxy Blocks
+
+You can also simply write multiple proxy blocks with the same target URL. This behaves the same way as using an array in the previous section.
+
+```js
+// Import swat-proxy.
+var swat_proxy = require('./index.js');
+
+// Add a container div to the end of the Google homepage.
+swat_proxy.proxy('http://www.google.com/', {
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<div id="SwatProxyContainer"></div>'
+});
+
+// Add some JS that populates the container div to the end of the Google homepage.
+swat_proxy.proxy('http://www.google.com/', {
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<script> document.getElementById("SwatProxyContainer").innerHTML = "Hello from swat-proxy!"; </script>'
+});
+
+// Start the proxy server.
+swat_proxy.start();
+```
+
 ## Contributing
 
-Please create JIRA tickets under the SWAT project and submit PRs for inclusion.
+Please refer to the [Contributing Guidelines](./.github/CONTRIBUTING.md).
 
-### Start the Proxy locally
+## FAQ
 
-```bash
-npm start
+**Q:** I keep getting `Error: listen EADDRINUSE :::8063`?
+**A:** That means your target port (`8063`) is currently in use. Likely, this is another instance of the proxy server. Simply shut down that process and try again. If some other service is using that port however, you may need to tell `swat-proxy` to use a different port:
+
+```js
+// Start the proxy server on port 8064.
+swat_proxy.start({ port: 8064 });
 ```
 
-### Run the Tests
+**Q:** My injection worked yesterday and today it doesn't - I haven't changed anything!
+**A:** tl;dr - Third parties change their web pages. Ensure your selectors still exist!
+This one actually bit me too. I spent about an hour debugging this code and the script I was working on to no avail - my content simply would not show up on the page. Turns out the `div` I was targeting by `id` had been removed from the page by the client I was using for testing.
 
-```bash
-npm run test
+**Q:** I can't figure out why this isn't working
+**A:** The `.start` function also supports a `debugMode` property that can hopefully help you out:
+
+```js
+// Start the proxy server in debug mode.
+swat_proxy.start({ debugMode: true });
 ```
+
+This will log each request URL from your browser to the console and inform when that URL matches the URL of any proxy block. If you don't see any matches, revisit your proxy block's [url](#url).
