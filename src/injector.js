@@ -60,27 +60,25 @@ export function addProxyTarget (target, options) {
 export function injectInto (url, html) {
   let result = html;
 
-  for (let target of Object.keys(this.proxyTargets)) {
-    if (target === url) {
-      logger.log('Found a match! Injecting content.');
+  console.log('proxyTarget for this url:', this.proxyTargets[url]);
+  console.log('keys', Object.keys(this.proxyTargets));
 
-      // Match! Inject the content in where desired.
-      let $ = cheerio.load(html.toString('utf8'));
+  if (this.proxyTargets[url]) {
+    logger.log('Found a match! Injecting content.');
 
-      // Possibly inject more than one thing into this page.
-      for (let targetOption of this.proxyTargets[target]) {
-        let { selector, manipulation, content } = targetOption;
+    // Match! Inject the content in where desired.
+    let $ = cheerio.load(html.toString('utf8'));
 
-        // Actually do the injection of this content.
-        $(selector)[manipulation](content);
-      }
+    // Possibly inject more than one thing into this page.
+    for (let targetOption of this.proxyTargets[url]) {
+      let { selector, manipulation, content } = targetOption;
 
-      // The result is the HTML after all the contents have been injected.
-      result = $.html();
-
-      // Early out, we won't match more than one target.
-      break;
+      // Actually do the injection of this content.
+      $(selector)[manipulation](content);
     }
+
+    // The result is the HTML after all the contents have been injected.
+    result = $.html();
   }
 
   return result;
