@@ -89,6 +89,11 @@ export function start (options) {
         alteredResponse = injector.injectInto(clientRequest.url, endpointHTML);
       }
 
+      // Preserve the server headers.
+      for (var header in response.headers) {
+        clientResponse.setHeader(header, response.headers[header]);
+      }
+
       // Send the possibly modified response back to the client.
       clientResponse.end(alteredResponse);
     });
