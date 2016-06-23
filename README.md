@@ -1,6 +1,10 @@
 # swat-proxy
 
-swat-proxy is intended to be used as a local development helper tool to easily inject content onto third party web pages. It acts as a man-in-the-middle between your browser (client) and a server, altering the server response from pages you specify.
+swat-proxy is intended to be used as a local development helper tool to easily inject content onto third party web pages.
+
+It acts as a man-in-the-middle between your browser (client) and a server, altering the server response for pages you specify. Your browser is none-the-wiser, rendering the response as if it came directly from the server itself.
+
+This allows you to see exactly what your content would look like on the target page.
 
 ## Installation
 
@@ -57,7 +61,7 @@ swat_proxy.proxy('http://www.google.com/', {
 
 The way to read this proxy block is:
 
-> *Append* `content` to the *body* of `http://www.google.com`.
+> *APPEND* `content` to the *body* of `http://www.google.com`.
 
 #### Details
 
@@ -95,7 +99,49 @@ For more information on these manipulations, see https://github.com/cheeriojs/ch
 
 ##### content
 
-A string containing the content to inject.
+A string containing the content to inject. Since you're injecting into an HTML page, be sure to wrap your content in appropriate HTML tags.
+
+```js
+// HTML Markup.
+content: '<div id="MyWidget">This is my widget!</div>'
+
+// Some Javascript.
+content: '<script> alert ("Hello from my widget!"); </script>'
+
+// A block of CSS.
+content: '<style> #MyWidget { font-variant: small-caps; } </style>'
+```
+
+###### Using React
+
+[React](https://facebook.github.io/react/) is currently very popular for building front-end user interfaces. Here is an example of using React to generate some markup to use as `content`:
+
+```js
+/* Filename: MyWidget.js */
+
+module.exports = React.createClass({
+  render: function () {
+    return (
+      <div id="MyWidget">This is my widget!</div>
+    );
+  }
+});
+```
+
+```js 
+/* Filename: main.js */
+
+var MyWidget = require('./MyWidget.js');
+const WidgetFactory = React.createFactory(MyWidget);
+const widgetContent = ReactDOMServer.renderToStaticMarkup(WidgetFactory());
+
+swat_proxy.proxy(example_url, {
+  selector: example_selector,
+  manipulation: example_manipulation,
+  content: widgetContent
+});
+
+```
 
 ### Third Party JS Common Use Case
 
@@ -115,11 +161,11 @@ var swat_proxy = require('./index.js');
 swat_proxy.proxy('http://www.google.com/', [{
   selector: 'body',
   manipulation: swat_proxy.Manipulations.APPEND,
-  content: '<div id="SwatProxyContainer"></div>'
+  content: '<div id="MyWidgetContainer"></div>'
 }, {
   selector: 'body',
   manipulation: swat_proxy.Manipulations.APPEND,
-  content: '<script> document.getElementById("SwatProxyContainer").innerHTML = "Hello from swat-proxy!"; </script>'
+  content: '<script> document.getElementById("MyWidgetContainer").innerHTML = "Hello from swat-proxy!"; </script>'
 }]);
 
 // Start the proxy server.
@@ -138,40 +184,24 @@ var swat_proxy = require('./index.js');
 swat_proxy.proxy('http://www.google.com/', {
   selector: 'body',
   manipulation: swat_proxy.Manipulations.APPEND,
-  content: '<div id="SwatProxyContainer"></div>'
+  content: '<div id="MyWidgetContainer"></div>'
 });
 
 // Add some JS that populates the container div to the end of the Google homepage.
 swat_proxy.proxy('http://www.google.com/', {
   selector: 'body',
   manipulation: swat_proxy.Manipulations.APPEND,
-  content: '<script> document.getElementById("SwatProxyContainer").innerHTML = "Hello from swat-proxy!"; </script>'
+  content: '<script> document.getElementById("MyWidgetContainer").innerHTML = "Hello from swat-proxy!"; </script>'
 });
 
 // Start the proxy server.
 swat_proxy.start();
 ```
 
-## Contributing
-
-Please refer to the [Contributing Guidelines](./.github/CONTRIBUTING.md).
-
 ## FAQ
 
-**Q:** I keep getting `Error: listen EADDRINUSE :::8063`?
-**A:** That means your target port (`8063`) is currently in use. Likely, this is another instance of the proxy server. Simply shut down that process and try again. If some other service is using that port however, you may need to tell `swat-proxy` to use a different port:
-
-```js
-// Start the proxy server on port 8064.
-swat_proxy.start({ port: 8064 });
-```
-
-**Q:** My injection worked yesterday and today it doesn't - I haven't changed anything!
-**A:** tl;dr - Third parties change their web pages. Ensure your selectors still exist!
-This one actually bit me too. I spent about an hour debugging this code and the script I was working on to no avail - my content simply would not show up on the page. Turns out the `div` I was targeting by `id` had been removed from the page by the client I was using for testing.
-
-**Q:** I can't figure out why this isn't working
-**A:** The `.start` function also supports a `debugMode` property that can hopefully help you out:
+**Q:** Why is my content not being injected?  
+**A:** The `.start` function supports a `debugMode` property that can hopefully help you out:
 
 ```js
 // Start the proxy server in debug mode.
@@ -179,3 +209,23 @@ swat_proxy.start({ debugMode: true });
 ```
 
 This will log each request URL from your browser to the console and inform when that URL matches the URL of any proxy block. If you don't see any matches, revisit your proxy block's [url](#url).
+
+---
+
+**Q:** I keep getting `Error: listen EADDRINUSE :::8063`?  
+**A:** That means your target port (`8063`) is currently in use. Likely, this is another instance of the proxy server. Simply shut down that process and try again. If some other service is using that port however, you may need to tell `swat-proxy` to use a different port:
+
+```js
+// Start the proxy server on port 8064.
+swat_proxy.start({ port: 8064 });
+```
+
+---
+
+**Q:** My injection worked yesterday and today it doesn't - I haven't changed anything!  
+**A:** tl;dr - Third parties change their web pages. Ensure your selectors still exist!  
+This one actually bit me too. I spent about an hour debugging this code and the script I was working on to no avail - my content simply would not show up on the page. Turns out the `div` I was targeting by `id` had been removed from the page by the client I was using for testing.
+
+## Contributing
+
+Please refer to the [Contributing Guidelines](./.github/CONTRIBUTING.md).
