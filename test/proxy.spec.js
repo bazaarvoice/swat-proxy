@@ -1,3 +1,7 @@
+/**
+ * Unit tests for src/proxy.
+ */
+
 // NPM.
 import test from 'tape';
 
@@ -7,7 +11,6 @@ import * as injector from '../src/injector.js';
 
 // Members
 const targetURL = 'bazaarvoice.com';
-const serverHTML = new Buffer('<html><body>UNIT TEST</body></html>');
 const selector = 'body';
 const manipulation = 'append';
 const content = '<div>injected content</div>';
@@ -36,7 +39,7 @@ test('#proxy Should add a proxy target', (assert) => {
     content: options.content
   }];
   assert.deepEqual(injector.proxyTargets, {
-    "bazaarvoice.com": expected
+    'bazaarvoice.com': expected
   }, 'A proxy target was added');
 
   assert.end();
@@ -61,7 +64,7 @@ test('#proxy Should add multiple proxy targets', (assert) => {
   proxy.proxy(targetURL, secondOptions);
 
   assert.deepEqual(injector.proxyTargets, {
-    "bazaarvoice.com": [{
+    'bazaarvoice.com': [{
       selector: firstOptions.selector,
       manipulation: firstOptions.manipulation,
       content: firstOptions.content
@@ -91,7 +94,7 @@ test('#proxy Should handle an array of options as proxy targets', (assert) => {
   proxy.proxy(targetURL, [firstOptions, secondOptions]);
 
   assert.deepEqual(injector.proxyTargets, {
-    "bazaarvoice.com": [{
+    'bazaarvoice.com': [{
       selector: firstOptions.selector,
       manipulation: firstOptions.manipulation,
       content: firstOptions.content
@@ -103,11 +106,11 @@ test('#proxy Should handle an array of options as proxy targets', (assert) => {
   }, 'All proxy targets were added');
 
   assert.end();
-  reset();  
+  reset();
 });
 
 test('#proxy Should throw when missing required param: target', (assert) => {
-  assert.throws(() => proxy.proxy(null, options), null, `Missing 'target' should throw`);
+  assert.throws(() => proxy.proxy(null, options), null, 'Missing \'target\' should throw');
 
   assert.end();
   reset();
@@ -124,9 +127,9 @@ test('#proxy Should throw when missing required options params', (assert) => {
     assert.throws(() => proxy.proxy(targetURL, badOptions), null, `Missing '${key}' should throw`);
 
     // Add this key back to badOptions for the next test.
-    badOptions[key] = options[key];  
+    badOptions[key] = options[key];
   }
 
   assert.end();
-  reset(); 
+  reset();
 });

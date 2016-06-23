@@ -1,3 +1,7 @@
+/**
+ * Unit tests for src/logger.
+ */
+
 // NPM.
 import test from 'tape';
 

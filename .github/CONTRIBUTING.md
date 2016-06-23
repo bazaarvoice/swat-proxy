@@ -11,7 +11,7 @@ Thanks for contributing! Here are some basic guidelines:
 
 ## Making Changes
 
-  1. Create a topic branch off of `master`.
+  1. Create a topic branch from `master`.
     * `git checkout -b my_branch master`.
   2. Make your changes in `src/` files.
     * Follow the JSDoc documentation pattern present in other files.
@@ -27,13 +27,19 @@ Thanks for contributing! Here are some basic guidelines:
 
 ### Post-install Script
 
-You'll notice that the GitHub repository does not contain the `dist/` directory. This is created locally on your machine after you `npm install` by running [babel](https://babeljs.io/) on the `src/` directory to transpile the ES6 code in `src/` to ES5 code in `dist/`. This allows us to write code in ES6 now without worrying about it not being fully supported in all node environments.
+You'll notice that the GitHub repository does not contain the `dist/` directory.
+This is created locally after running `npm install` by running [babel][1] on the
+`src/` directory to transpile the ES6 code in `src/` to ES5 code in `dist/`.
+This allows for use of ES6 in all Node.js environments.
 
 ### Pre-commit Script
 
-There is a pre-commit script that runs the tests and the linter before accepting a commit. If your commit fails either of these, you will have to fix it before being able to commit your changes.
+A pre-commit script runs unit tests and the linter before accepting a commit.
+If a commit fails either of these, it must be fixed before the changes can be
+committed.
 
-We use [tape](https://github.com/substack/tape) and [ESLint](http://eslint.org/) respectively.
+For this project, [tape][2] is the test framework and [ESLint][3] is used for
+linting.
 
 ### Run the Tests Manually
 
@@ -47,3 +53,6 @@ npm run test
 npm run eslint
 ```
 
+[1]: https://babeljs.io/
+[2]: https://github.com/substack/tape
+[3]: http://eslint.org/
