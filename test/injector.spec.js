@@ -69,7 +69,7 @@ test('#injectInto Should alter response when target matches.', (assert) => {
   assert.equal(
     result.indexOf(content) >= 0,
     true,
-    "Result contains injected content."
+    'Result contains injected content.'
   );
 
   assert.end();
