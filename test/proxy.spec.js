@@ -1,3 +1,7 @@
+/**
+ * Unit tests for src/proxy.
+ */
+
 // NPM.
 import test from 'tape';
 

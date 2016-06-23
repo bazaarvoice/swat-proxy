@@ -19,7 +19,7 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
 /**
  * Adds a proxy target.
  *
- * @param {String}          target  - A string to test URLs against.
+ * @param {String}  target  - A string to test URLs against.
  *   If the URL matches exactly, options.content will be injected into the response.
  *
  * @param {Object | Array}  options - Required options or list of options.

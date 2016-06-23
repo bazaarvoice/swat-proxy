@@ -1,3 +1,7 @@
+/**
+ * Unit tests for src/injector.
+ */
+
 // NPM.
 import test from 'tape';
 
