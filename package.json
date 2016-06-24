@@ -2,6 +2,19 @@
   "name": "swat-proxy",
   "version": "1.0.0",
   "description": "A NodeJS proxy server for web application injection.",
+  "keywords": [
+    "3pjs",
+    "http",
+    "inject",
+    "man-in-the-middle",
+    "manipulate",
+    "proxy",
+    "server",
+    "third-party",
+    "tool",
+    "util",
+    "utility"
+  ],
   "main": "index.js",
   "scripts": {
     "build": "babel src -d dist",
