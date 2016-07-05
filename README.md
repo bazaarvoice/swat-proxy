@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/bazaarvoice/swat-proxy.svg?branch=master)](https://travis-ci.org/bazaarvoice/swat-proxy)
+
 # swat-proxy
 
 swat-proxy is a local development helper tool to easily
