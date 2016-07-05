@@ -1,6 +1,6 @@
 # swat-proxy
 
-swat-proxy is intended for use as a local development helper tool to easily
+swat-proxy is a local development helper tool to easily
 inject content, such as Javascript web applications, onto third party web pages.
 This is useful in the development of applications intended for third party use.
 
