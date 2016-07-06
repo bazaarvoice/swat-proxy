@@ -20,8 +20,8 @@
     "build": "babel src -d dist",
     "eslint": "eslint index.js src/** test/**",
     "postinstall": "npm run build",
-    "precommit": "tape -r babel-register 'test/**/*.spec.js' | tap-spec && npm run eslint",
-    "test": "tape -r babel-register 'test/**/*.spec.js' | tap-spec || true"
+    "precommit": "npm test && npm run eslint",
+    "test": "tape -r babel-register 'test/**/*.spec.js' | tap-spec"
   },
   "repository": {
     "type": "git",
