@@ -23,6 +23,11 @@
     "precommit": "npm test && npm run eslint",
     "test": "tape -r babel-register 'test/**/*.spec.js' | tap-spec"
   },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run precommit"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/bazaarvoice/swat-proxy.git"
