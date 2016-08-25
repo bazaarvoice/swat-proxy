@@ -113,10 +113,7 @@ export function injectInto (url, html) {
     // Prefix matching only cares that our current request url
     // starts with the target's protocol/hostname/port/path/query
     [MatchTypes.PREFIX]: (targetUrl) => {
-      const parsedTargetUrl = urlParser.parse(targetUrl);
-      const targetUrlComparator = `${parsedTargetUrl.protocol}//${parsedTargetUrl.host}${parsedTargetUrl.path}`;
-
-      return urlComparator.startsWith(targetUrlComparator);
+      return urlComparator.startsWith(targetUrl);
     }
   };
 
