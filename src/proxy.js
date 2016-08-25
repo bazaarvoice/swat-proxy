@@ -37,16 +37,27 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
 export function proxy (target, options) {
   // A target is required.
   if (!target) {
-    throw new Error(ERROR_MISSING_PARAMS);
+    throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
   }
 
   // Ensure that options is an array.
   options = [].concat(options);
+  const missingOptions = [];
 
   for (let optionEntry of options) {
+    if (!optionEntry.selector) {
+      missingOptions.push('selector');
+    }
+    if (!optionEntry.manipulation) {
+      missingOptions.push('manipulation');
+    }
+    if (!optionEntry.content) {
+      missingOptions.push('content');
+    }
+
     // All options parameters are required.
-    if (!optionEntry.selector || !optionEntry.manipulation || !optionEntry.content) {
-      throw new Error(ERROR_MISSING_PARAMS);
+    if (missingOptions.length) {
+      throw new Error(`${ERROR_MISSING_PARAMS}: '${missingOptions.join("', '")}'`);
     }
 
     // Add the desired proxy target.
@@ -90,7 +101,7 @@ export function start (options) {
       }
 
       // Preserve the server headers.
-      for (var header in response.headers) {
+      for (let header in response.headers) {
         clientResponse.setHeader(header, response.headers[header]);
       }
 
