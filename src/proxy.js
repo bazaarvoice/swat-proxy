@@ -21,7 +21,8 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
  * Adds a proxy target.
  *
  * @param {String}  target  - A string to test URLs against.
- *   If the URL matches exactly, options.content will be injected into the response.
+ *   If the URL matches according to its options.matchType rule,
+ *   options.content will be injected into the response.
  *
  * @param {Object | Array}  options - Required options or list of options.
  *
@@ -75,6 +76,43 @@ export function proxy (target, options) {
 
     // Add the desired proxy target.
     injector.addProxyTarget(target, optionEntry);
+  }
+}
+
+/**
+ * Removes a proxy target.
+ *
+ * @param {String}  target  - A string to test URLs against.
+ *
+ * @param {Object | Array}  options - options to be removed, or list of options to be removed.
+ *
+ * @returns {void}
+ */
+export function removeProxy (target, options) {
+  // A target is required.
+  if (!target) {
+    throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
+  }
+
+  // If there's a trailing slash on the target, trim it
+  if (target[target.length-1] === '/') {
+    target = target.substring(0, target.length-1);
+  }
+
+  // Lowercase our target url for comparison to storage
+  target = target.toLowerCase();
+
+  if (options) {
+    // Ensure that options is an array.
+    options = [].concat(options);
+
+    for (let optionEntry of options) {
+      // Remove the desired proxy target.
+      injector.removeProxyTarget(target, optionEntry);
+    }
+  }
+  else {
+    injector.removeProxyTarget(target);
   }
 }
 
