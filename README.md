@@ -148,8 +148,11 @@ these manipulations, see the [cheerio documentation][2].
 
 ##### content
 
-A string containing the content to inject. Since content is injected into an
-HTML page, it is important to wrap the content with the appropriate HTML tags.
+A string containing the content to inject, or a function that returns a string of
+content to be injected. If passing a function, it will receive the original element's
+markup for transformation, and is expected to return the transformed markup. Since
+content is injected into an HTML page, it is important to wrap the content with the
+appropriate HTML tags.
 
 ##### matchType
 

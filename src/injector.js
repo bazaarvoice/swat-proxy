@@ -38,7 +38,9 @@ export var proxyTargets = new Map();
  * @param {String} options.manipulation -  The swat-proxy manipulation.
  *                 @see  ./manipulations.js
  *
- * @param {String} options.content - The actual content to inject.
+ * @param {String | Function} options.content - The actual content to inject, or a
+ *   function that receives the element's markup and returns transformed markup.
+ *
  *
  * @returns {void}
  */
@@ -118,6 +120,8 @@ export function injectInto (url, html) {
   };
 
   let result = html;
+  let changed = false;
+  const $ = cheerio.load(html.toString('utf8'));
 
   for (let key of this.proxyTargets.keys()) {
     const optionSet = this.proxyTargets.get(key);
@@ -126,19 +130,32 @@ export function injectInto (url, html) {
       // Each option hash in the set can have its own separate matchType, so
       // we only process them when their matchType processor passes its test
       if (matchTypeMap[options.matchType](key)) {
+        changed = true;
         logger.log('Found a match! Injecting content.');
 
         // Match! Inject the content in where desired.
-        let $ = cheerio.load(html.toString('utf8'));
         let { selector, manipulation, content } = options;
 
         // Actually do the injection of this content.
-        $(selector)[manipulation](content);
-
-        // The result is the HTML after all the contents have been injected.
-        result = $.html();
+        if (typeof content === 'function') {
+          // Iterate over each match
+          $(selector).each((i, elem) => {
+            // Invoke our content function for each element, passing its html
+            // and assign the result of that call as the manipulated content.
+            $(elem)[manipulation](content($.html(elem)));
+          });
+        }
+        else {
+          // Apply string content to all matched nodes
+          $(selector)[manipulation](content);
+        }
       }
     }
+  }
+
+  if (changed) {
+    // The result is the HTML after all the contents have been injected.
+    result = $.html();
   }
 
   return result;

@@ -55,7 +55,7 @@ test('#proxy Should add multiple proxy targets', (assert) => {
   // Second call.
   const secondOptions = {
     ...options,
-    content: '<div>#2</div>'
+    content: () => '<div>#2</div>'
   };
   proxy.proxy(targetURL, secondOptions);
 
@@ -79,7 +79,7 @@ test('#proxy Should handle an array of options as proxy targets', (assert) => {
   };
   const secondOptions = {
     ...options,
-    content: '<div>#2</div>'
+    content: () => '<div>#2</div>'
   };
   proxy.proxy(targetURL, [firstOptions, secondOptions]);
 
@@ -149,7 +149,7 @@ test('#removeProxy Should remove multiple proxy targets', (assert) => {
   };
   const secondOptions = {
     ...options,
-    content: '<div>#2</div>'
+    content: () => '<div>#2</div>'
   };
 
   proxy.proxy(targetURL, [firstOptions, secondOptions]);
@@ -179,7 +179,7 @@ test('#removeProxy Should handle removing an array of options from proxy targets
   };
   const secondOptions = {
     ...options,
-    content: '<div>#2</div>'
+    content: () => '<div>#2</div>'
   };
   proxy.proxy(targetURL, [firstOptions, secondOptions]);
 
@@ -207,7 +207,7 @@ test('#removeProxy Should clear all options from proxy target when no options ar
   };
   const secondOptions = {
     ...options,
-    content: '<div>#2</div>'
+    content: () => '<div>#2</div>'
   };
   proxy.proxy(targetURL, [firstOptions, secondOptions]);
 
