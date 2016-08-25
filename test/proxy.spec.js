@@ -14,14 +14,16 @@ const targetURL = 'bazaarvoice.com';
 const selector = 'body';
 const manipulation = 'append';
 const content = '<div>injected content</div>';
+const matchType = 'exact';
 const options = {
-  selector: selector,
-  manipulation: manipulation,
-  content: content
+  selector,
+  manipulation,
+  content,
+  matchType
 };
 
 function reset () {
-  injector.proxyTargets = {};
+  injector.proxyTargets = new Map();
 }
 
 /*
@@ -33,14 +35,10 @@ test('# proxy.spec.js', (t) => t.end());
 test('#proxy Should add a proxy target', (assert) => {
   proxy.proxy(targetURL, options);
 
-  const expected = [{
-    selector: options.selector,
-    manipulation: options.manipulation,
-    content: options.content
-  }];
-  assert.deepEqual(injector.proxyTargets, {
-    'bazaarvoice.com': expected
-  }, 'A proxy target was added');
+  const expected = new Map([
+    [targetURL, new Set([options])]
+  ]);
+  assert.deepEqual(injector.proxyTargets, expected, 'A proxy target was added');
 
   assert.end();
   reset();
@@ -49,31 +47,26 @@ test('#proxy Should add a proxy target', (assert) => {
 test('#proxy Should add multiple proxy targets', (assert) => {
   // First call.
   const firstOptions = {
-    selector: selector,
-    manipulation: manipulation,
+    ...options,
     content: '<div>#1</div>'
   };
   proxy.proxy(targetURL, firstOptions);
 
   // Second call.
   const secondOptions = {
-    selector: selector,
-    manipulation: manipulation,
+    ...options,
     content: '<div>#2</div>'
   };
   proxy.proxy(targetURL, secondOptions);
 
-  assert.deepEqual(injector.proxyTargets, {
-    'bazaarvoice.com': [{
-      selector: firstOptions.selector,
-      manipulation: firstOptions.manipulation,
-      content: firstOptions.content
-    }, {
-      selector: secondOptions.selector,
-      manipulation: secondOptions.manipulation,
-      content: secondOptions.content
-    }]
-  }, 'All proxy targets were added');
+  const expected = new Map([
+    [targetURL, new Set([
+      firstOptions,
+      secondOptions
+    ])]
+  ]);
+
+  assert.deepEqual(injector.proxyTargets, expected, 'All proxy targets were added');
 
   assert.end();
   reset();
@@ -81,29 +74,23 @@ test('#proxy Should add multiple proxy targets', (assert) => {
 
 test('#proxy Should handle an array of options as proxy targets', (assert) => {
   const firstOptions = {
-    selector: selector,
-    manipulation: manipulation,
+    ...options,
     content: '<div>#1</div>'
   };
   const secondOptions = {
-    selector: selector,
-    manipulation: manipulation,
+    ...options,
     content: '<div>#2</div>'
   };
-
   proxy.proxy(targetURL, [firstOptions, secondOptions]);
 
-  assert.deepEqual(injector.proxyTargets, {
-    'bazaarvoice.com': [{
-      selector: firstOptions.selector,
-      manipulation: firstOptions.manipulation,
-      content: firstOptions.content
-    }, {
-      selector: secondOptions.selector,
-      manipulation: secondOptions.manipulation,
-      content: secondOptions.content
-    }]
-  }, 'All proxy targets were added');
+  const expected = new Map([
+    [targetURL, new Set([
+      firstOptions,
+      secondOptions
+    ])]
+  ]);
+
+  assert.deepEqual(injector.proxyTargets, expected, 'All proxy targets were added');
 
   assert.end();
   reset();

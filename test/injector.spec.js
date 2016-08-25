@@ -15,9 +15,16 @@ const serverHTML = new Buffer('<html><body>UNIT TEST</body></html>');
 const selector = 'body';
 const manipulation = Manipulations.APPEND;
 const content = '<div>injected content</div>';
+const matchType = 'exact';
+const options = {
+  selector,
+  manipulation,
+  content,
+  matchType
+};
 
 function reset () {
-  injector.proxyTargets = {};
+  injector.proxyTargets = new Map();
 }
 
 /*
@@ -28,13 +35,11 @@ test('# injector.spec.js', (t) => t.end());
 
 test('#addProxyTarget Should work when target does not exist', (assert) => {
   injector.addProxyTarget(targetURL, {
-    selector: selector,
-    manipulation: manipulation,
-    content: content
+    ...options
   });
 
-  assert.equal(Object.keys(injector.proxyTargets).length, 1, 'A proxyTarget was created');
-  assert.equal(injector.proxyTargets[targetURL].length, 1, 'Only one option was created');
+  assert.equal(injector.proxyTargets.size, 1, 'A proxyTarget was created');
+  assert.equal(injector.proxyTargets.get(targetURL).size, 1, 'Only one option was created');
 
   assert.end();
   reset();
@@ -43,19 +48,15 @@ test('#addProxyTarget Should work when target does not exist', (assert) => {
 test('#addProxyTarget Should work when target already exists', (assert) => {
   // Setup: set up this target first.
   injector.addProxyTarget(targetURL, {
-    selector: selector,
-    manipulation: manipulation,
-    content: content
+    ...options
   });
 
   // Test: add another proxyTarget with the same target (key).
   injector.addProxyTarget(targetURL, {
-    selector: selector,
-    manipulation: manipulation,
-    content: content
+    ...options
   });
-  assert.equal(Object.keys(injector.proxyTargets).length, 1, 'A new proxyTarget was not created');
-  assert.equal(injector.proxyTargets[targetURL].length, 2, 'The existing proxyTarget was added to');
+  assert.equal(injector.proxyTargets.size, 1, 'A new proxyTarget was not created');
+  assert.equal(injector.proxyTargets.get(targetURL).size, 2, 'The existing proxyTarget was added to');
 
   assert.end();
   reset();
@@ -64,9 +65,7 @@ test('#addProxyTarget Should work when target already exists', (assert) => {
 test('#injectInto Should alter response when target matches.', (assert) => {
   // Setup: Proxy target matches URL.
   injector.addProxyTarget(targetURL, {
-    selector: selector,
-    manipulation: manipulation,
-    content: content
+    ...options
   });
   const result = injector.injectInto(targetURL, serverHTML);
 
@@ -83,9 +82,7 @@ test('#injectInto Should alter response when target matches.', (assert) => {
 test('#injectInto Should not alter response when no target matches.', (assert) => {
   // Setup: Proxy target does not match URL.
   injector.addProxyTarget(targetURL, {
-    selector: selector,
-    manipulation: manipulation,
-    content: content
+    ...options
   });
   const result = injector.injectInto('google.com', serverHTML);
 

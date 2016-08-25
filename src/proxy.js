@@ -9,8 +9,9 @@ import http from 'http';
 import request from 'request';
 
 // Local.
-import * as injector from './injector.js';
-import * as logger from './logger.js';
+import * as injector from './injector';
+import * as logger from './logger';
+import { MatchTypes } from './manipulations';
 
 // Members.
 const DEFAULT_PORT = 8063;
@@ -40,6 +41,16 @@ export function proxy (target, options) {
     throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
   }
 
+  // If there's a trailing slash on the target, trim it
+  if (target[target.length-1] === '/') {
+    target = target.substring(0, target.length-1);
+  }
+
+  // Lowercase our target url for storage
+  target = target.toLowerCase();
+
+  const defaultMatchType = MatchTypes.EXACT;
+
   // Ensure that options is an array.
   options = [].concat(options);
   const missingOptions = [];
@@ -54,6 +65,8 @@ export function proxy (target, options) {
     if (!optionEntry.content) {
       missingOptions.push('content');
     }
+
+    optionEntry.matchType = optionEntry.matchType || defaultMatchType;
 
     // All options parameters are required.
     if (missingOptions.length) {
