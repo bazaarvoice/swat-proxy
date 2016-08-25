@@ -57,7 +57,7 @@ export function proxy (target, options) {
 
     // All options parameters are required.
     if (missingOptions.length) {
-      throw new Error(`${ERROR_MISSING_PARAMS}: '${missingOptions.join("', '")}'`);
+      throw new Error(`${ERROR_MISSING_PARAMS}: '${missingOptions.join('\', \'')}'`);
     }
 
     // Add the desired proxy target.
