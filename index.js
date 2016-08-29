@@ -4,11 +4,11 @@
 
 // Local.
 var _proxy = require('./dist/proxy.js');
-var _manipulations = require('./dist/manipulations.js');
+var _enums = require('./dist/enums.js');
 
 module.exports = {
-  Manipulations: _manipulations.Manipulations,
-  MatchTypes: _manipulations.MatchTypes,
+  Manipulations: _enums.Manipulations,
+  MatchTypes: _enums.MatchTypes,
   proxy: _proxy.proxy,
   removeProxy: _proxy.removeProxy,
   start: _proxy.start
