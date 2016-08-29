@@ -11,7 +11,8 @@ import request from 'request';
 // Local.
 import * as injector from './injector';
 import * as logger from './logger';
-import { MatchTypes } from './manipulations';
+import { MatchTypes } from './enums';
+import { trimSlash } from './utils';
 
 // Members.
 const DEFAULT_PORT = 8063;
@@ -30,7 +31,7 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
  *   @see https://github.com/cheeriojs/cheerio#selectors
  *
  * @param {String}  options.manipulation - The cheerio manipulation method to use.
- *   @see manipulations.js.
+ *   @see enums.js.
  *
  * @param {String}  options.content - The HTML / CSS / JS content to inject.
  *
@@ -42,13 +43,8 @@ export function proxy (target, options) {
     throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
   }
 
-  // If there's a trailing slash on the target, trim it
-  if (target[target.length-1] === '/') {
-    target = target.substring(0, target.length-1);
-  }
-
   // Lowercase our target url for storage
-  target = target.toLowerCase();
+  target = trimSlash(target.toLowerCase());
 
   const defaultMatchType = MatchTypes.EXACT;
 
@@ -70,7 +66,7 @@ export function proxy (target, options) {
     optionEntry.matchType = optionEntry.matchType || defaultMatchType;
 
     // All options parameters are required.
-    if (missingOptions.length) {
+    if (missingOptions.length > 0) {
       throw new Error(`${ERROR_MISSING_PARAMS}: '${missingOptions.join('\', \'')}'`);
     }
 
@@ -94,13 +90,8 @@ export function removeProxy (target, options) {
     throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
   }
 
-  // If there's a trailing slash on the target, trim it
-  if (target[target.length-1] === '/') {
-    target = target.substring(0, target.length-1);
-  }
-
   // Lowercase our target url for comparison to storage
-  target = target.toLowerCase();
+  target = trimSlash(target.toLowerCase());
 
   if (options) {
     // Ensure that options is an array.

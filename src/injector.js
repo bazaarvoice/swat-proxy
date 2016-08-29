@@ -10,7 +10,8 @@ import cheerio from 'cheerio';
 
 // Local.
 import * as logger from './logger';
-import { MatchTypes } from './manipulations';
+import { MatchTypes } from './enums';
+import { trimSlash } from './utils';
 
 /**
  * proxyTargets define what to inject for each URL match.
@@ -36,7 +37,7 @@ export var proxyTargets = new Map();
  *                 @see  https://github.com/cheeriojs/cheerio#selectors
  *
  * @param {String} options.manipulation -  The swat-proxy manipulation.
- *                 @see  ./manipulations.js
+ *                 @see  ./enums.js
  *
  * @param {String | Function} options.content - The actual content to inject, or a
  *   function that receives the element's markup and returns transformed markup.
@@ -85,13 +86,8 @@ export function removeProxyTarget (target, options) {
  * @returns {String}     - HTML with contents injected.
  */
 export function injectInto (url, html) {
-  // If there's a trailing slash on the url, trim it
-  if (url[url.length-1] === '/') {
-    url = url.substring(0, url.length-1);
-  }
-
   // Lowercase the url for comparison
-  url = url.toLowerCase();
+  url = trimSlash(url.toLowerCase());
 
   // Precalculate our url vars in case there are multiple PREFIX
   // matchTypes in the loop below that would cause multiple calculations
