@@ -143,8 +143,10 @@ export function start (options) {
       }
 
       // Preserve the server headers.
-      for (let header in response.headers) {
-        clientResponse.setHeader(header, response.headers[header]);
+      if (response && response.headers) {
+        for (let header in response.headers) {
+          clientResponse.setHeader(header, response.headers[header]);
+        }
       }
 
       // Send the possibly modified response back to the client.
