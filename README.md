@@ -2,9 +2,11 @@
 
 # swat-proxy
 
-swat-proxy is a local development helper tool to easily
-inject content, such as Javascript web applications, onto third party web pages.
-This is useful in the development of applications intended for third party use.
+swat-proxy is a tool to easily inject content, such as Javascript web applications,
+onto third party web pages. This is useful in the development of applications
+intended for third party use. It can also be useful in establishing a general
+proxy server for use in applications that might need to regularly transform
+requested content.
 
 swat-proxy acts as a man-in-the-middle between browser and server, altering the
 server response for specified pages. The browser renders the modified response
@@ -74,6 +76,31 @@ The way to read this proxy block is:
 
 > *APPEND* `content` to the *body* of `http://www.google.com`.
 
+#### Removing Proxy Blocks
+
+In order to prevent memory leaks over the lifetime of potentially long-running
+proxy scripts, when new proxy URLs may be registered in an ad hoc fashion, a
+`.removeProxy` function is also provided. An example usage might look like this:
+
+```js
+var options = {
+  selector: 'body',
+  manipulation: swat_proxy.Manipulations.APPEND,
+  content: '<script> alert ("Hello from swat-proxy!"); </script>'
+};
+
+swat_proxy.proxy('http://www.google.com/', options);
+swat_proxy.removeProxy('http://www.google.com/', options);
+// OR
+swat_proxy.removeProxy('http://www.google.com/');
+```
+
+Note that any options objects passed to `.removeProxy` are compared by reference,
+not by value. If you want to remove an options object from your proxy at a future
+time, you need to store a reference for it in a variable, to be passed later. If
+you simply want to clear all proxies associated with a given URL, you can ignore
+the second option and just pass the target URL.
+
 #### Details
 
 Let us break down the parameters of proxy blocks. The most up-to-date
@@ -84,7 +111,8 @@ it is detailed here as well. Refer to the following signature:
 swat_proxy.proxy(url, {
   selector,
   manipulation,
-  content
+  content,
+  [matchType]
 });
 ```
 
@@ -120,8 +148,25 @@ these manipulations, see the [cheerio documentation][2].
 
 ##### content
 
-A string containing the content to inject. Since content is injected into an
-HTML page, it is important to wrap the content with the appropriate HTML tags.
+A string containing the content to inject, or a function that returns a string of
+content to be injected. If passing a function, it will receive the original element's
+markup for transformation, and is expected to return the transformed markup. Since
+content is injected into an HTML page, it is important to wrap the content with the
+appropriate HTML tags.
+
+##### matchType
+
+`swat-proxy` also provides an enumeration of matchType algorithms for some flexibility
+in the way it matches URLs. For backwards compatibility, this field is optional, and
+defaults to `EXACT`. The values in the matchType enumeration are:
+
+  * `DOMAIN`: Match against just the domain portion of the url. This includes subdomain.
+  * `EXACT`: Match the url exactly as it's been entered, including query parameters.
+  * `PREFIX`: Match the target URL against the beginning of the requested URL (i.e. URL starts with)
+
+The `matchType` option is provided as part of the options object(s) passed to the `.proxy`
+function, meaning you can provide a different `matchType` parameter for each rule in the
+overall set of options, if you desire different behavior based on the URL stub.
 
 ```js
 // HTML Markup.

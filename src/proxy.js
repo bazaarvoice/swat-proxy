@@ -9,8 +9,10 @@ import http from 'http';
 import request from 'request';
 
 // Local.
-import * as injector from './injector.js';
-import * as logger from './logger.js';
+import * as injector from './injector';
+import * as logger from './logger';
+import { MatchTypes } from './enums';
+import { trimSlash } from './utils';
 
 // Members.
 const DEFAULT_PORT = 8063;
@@ -20,7 +22,8 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
  * Adds a proxy target.
  *
  * @param {String}  target  - A string to test URLs against.
- *   If the URL matches exactly, options.content will be injected into the response.
+ *   If the URL matches according to its options.matchType rule,
+ *   options.content will be injected into the response.
  *
  * @param {Object | Array}  options - Required options or list of options.
  *
@@ -28,7 +31,7 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
  *   @see https://github.com/cheeriojs/cheerio#selectors
  *
  * @param {String}  options.manipulation - The cheerio manipulation method to use.
- *   @see manipulations.js.
+ *   @see enums.js.
  *
  * @param {String}  options.content - The HTML / CSS / JS content to inject.
  *
@@ -37,20 +40,70 @@ const ERROR_MISSING_PARAMS = 'Missing one or more required parameters';
 export function proxy (target, options) {
   // A target is required.
   if (!target) {
-    throw new Error(ERROR_MISSING_PARAMS);
+    throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
   }
+
+  // Lowercase our target url for storage
+  target = trimSlash(target.toLowerCase());
+
+  const defaultMatchType = MatchTypes.EXACT;
 
   // Ensure that options is an array.
   options = [].concat(options);
+  const missingOptions = [];
 
   for (let optionEntry of options) {
+    if (!optionEntry.selector) {
+      missingOptions.push('selector');
+    }
+    if (!optionEntry.manipulation) {
+      missingOptions.push('manipulation');
+    }
+    if (!optionEntry.content) {
+      missingOptions.push('content');
+    }
+
+    optionEntry.matchType = optionEntry.matchType || defaultMatchType;
+
     // All options parameters are required.
-    if (!optionEntry.selector || !optionEntry.manipulation || !optionEntry.content) {
-      throw new Error(ERROR_MISSING_PARAMS);
+    if (missingOptions.length > 0) {
+      throw new Error(`${ERROR_MISSING_PARAMS}: '${missingOptions.join('\', \'')}'`);
     }
 
     // Add the desired proxy target.
     injector.addProxyTarget(target, optionEntry);
+  }
+}
+
+/**
+ * Removes a proxy target.
+ *
+ * @param {String}  target  - A string to test URLs against.
+ *
+ * @param {Object | Array}  options - options to be removed, or list of options to be removed.
+ *
+ * @returns {void}
+ */
+export function removeProxy (target, options) {
+  // A target is required.
+  if (!target) {
+    throw new Error(`${ERROR_MISSING_PARAMS}: 'url'`);
+  }
+
+  // Lowercase our target url for comparison to storage
+  target = trimSlash(target.toLowerCase());
+
+  if (options) {
+    // Ensure that options is an array.
+    options = [].concat(options);
+
+    for (let optionEntry of options) {
+      // Remove the desired proxy target.
+      injector.removeProxyTarget(target, optionEntry);
+    }
+  }
+  else {
+    injector.removeProxyTarget(target);
   }
 }
 
@@ -91,7 +144,7 @@ export function start (options) {
 
       // Preserve the server headers.
       if (response && response.headers) {
-        for (var header in response.headers) {
+        for (let header in response.headers) {
           clientResponse.setHeader(header, response.headers[header]);
         }
       }

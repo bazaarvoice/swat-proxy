@@ -7,4 +7,10 @@ export const Manipulations = {
   PREPEND: 'prepend',
   REPLACE: 'replaceWith',
   WRAP: 'wrap'
-}
+};
+
+export const MatchTypes = {
+  DOMAIN: 'domain',
+  EXACT: 'exact',
+  PREFIX: 'prefix'
+};
